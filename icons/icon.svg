@@ -1,8 +1,8 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="後中醫複習表">
-  <rect width="512" height="512" rx="72" fill="#314b3d"/>
+  <rect width="512" height="512" rx="72" fill="#9f3e68"/>
   <path d="M128 332c52-92 104-135 156-130 33 3 57 25 100 68" fill="none" stroke="#fffaf1" stroke-width="30" stroke-linecap="round"/>
   <circle cx="148" cy="336" r="24" fill="#c95c53"/>
-  <circle cx="254" cy="220" r="24" fill="#c58b2c"/>
+  <circle cx="254" cy="220" r="24" fill="#d58aa5"/>
   <circle cx="380" cy="270" r="24" fill="#4b8c64"/>
   <path d="M142 390h228" stroke="#fffaf1" stroke-width="28" stroke-linecap="round"/>
   <text x="256" y="150" fill="#fffaf1" font-family="Arial, sans-serif" font-size="82" font-weight="800" text-anchor="middle">中</text>
