@@ -250,7 +250,7 @@ function getVisibleLessons() {
 
 function setViewTitle() {
   const copy = {
-    today: ["今日待複習", "準備回收記憶"],
+    today: ["今日待複習", "持續複習成為永久記憶！"],
     all: ["完整清單", "全部課程與複習排程"],
     settings: ["間距設定", "調整紅橘綠燈的節奏"],
   };
