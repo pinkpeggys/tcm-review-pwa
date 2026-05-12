@@ -1,0 +1,18 @@
+{
+  "name": "後中醫遺忘曲線複習表",
+  "short_name": "複習表",
+  "description": "用紅燈、橘燈、綠燈安排後中醫備考複習節奏。",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#f6f2ea",
+  "theme_color": "#f6f2ea",
+  "lang": "zh-Hant",
+  "icons": [
+    {
+      "src": "./icons/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
