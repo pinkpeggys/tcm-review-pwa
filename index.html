@@ -3,20 +3,17 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="theme-color" content="#f6f2ea" />
+    <meta name="theme-color" content="#fff1f6" />
     <title>後中醫複習排程</title>
     <link rel="manifest" href="./manifest.webmanifest" />
     <link rel="icon" href="./icons/icon.svg" />
     <link rel="apple-touch-icon" href="./icons/icon.svg" />
-    <link rel="stylesheet" href="./styles.css?v=4" />
+    <link rel="stylesheet" href="./styles.css?v=6" />
   </head>
   <body>
     <div class="app-shell">
       <aside class="sidebar" aria-label="複習摘要">
         <div class="brand">
-          <div class="brand-mark" aria-hidden="true">
-            <span>中</span>
-          </div>
           <div>
             <p class="eyebrow">後中醫備考</p>
             <h1>遺忘曲線複習表</h1>
@@ -60,7 +57,7 @@
         <section class="topbar">
           <div>
             <p class="eyebrow">PWA 離線版</p>
-            <h2>把每堂課變成下一次該看的清單</h2>
+            <h2>你很棒！完成一項課程！</h2>
           </div>
           <button id="installButton" class="icon-text-button" hidden type="button">
             <span aria-hidden="true">⇩</span>
@@ -86,7 +83,7 @@
           <div class="board-header">
             <div>
               <p id="viewEyebrow" class="eyebrow">今日待複習</p>
-              <h3 id="viewTitle">準備回收記憶</h3>
+              <h3 id="viewTitle">持續複習成為永久記憶！</h3>
             </div>
             <div class="quick-filters" role="group" aria-label="篩選">
               <button class="filter-button is-active" data-filter="all" type="button">全部</button>
@@ -126,6 +123,7 @@
             <input id="greenGap" type="number" min="1" max="90" />
           </div>
         </section>
+        <footer class="site-footer">From pinkpeggys</footer>
       </main>
     </div>
 
@@ -154,6 +152,6 @@
       </article>
     </template>
 
-    <script src="./app.js?v=4" type="module"></script>
+    <script src="./app.js?v=6" type="module"></script>
   </body>
 </html>
