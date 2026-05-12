@@ -4,8 +4,8 @@
   "description": "用紅燈、橘燈、綠燈安排後中醫備考複習節奏。",
   "start_url": "./index.html",
   "display": "standalone",
-  "background_color": "#f6f2ea",
-  "theme_color": "#f6f2ea",
+  "background_color": "#fff1f6",
+  "theme_color": "#fff1f6",
   "lang": "zh-Hant",
   "icons": [
     {
