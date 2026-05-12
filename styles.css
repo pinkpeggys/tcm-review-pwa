@@ -1,18 +1,18 @@
 :root {
   color-scheme: light;
-  --paper: #f6f2ea;
-  --ink: #25221d;
-  --muted: #6d665c;
-  --line: #ded6c9;
-  --panel: #fffaf1;
-  --panel-strong: #efe6d8;
-  --tea: #516d5c;
-  --tea-dark: #314b3d;
+  --paper: #fff1f6;
+  --ink: #33242a;
+  --muted: #806872;
+  --line: #efcad8;
+  --panel: #fff9fb;
+  --panel-strong: #f8dbe6;
+  --tea: #c25f86;
+  --tea-dark: #9f3e68;
   --red: #c95c53;
   --amber: #c58b2c;
   --green: #4b8c64;
-  --blue: #446d98;
-  --shadow: 0 20px 50px rgba(57, 47, 34, 0.12);
+  --blue: #8b6fb0;
+  --shadow: 0 20px 50px rgba(153, 58, 101, 0.13);
   font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
 }
 
@@ -28,8 +28,8 @@ body {
   margin: 0;
   min-height: 100vh;
   background:
-    linear-gradient(135deg, rgba(81, 109, 92, 0.14), transparent 38%),
-    linear-gradient(315deg, rgba(68, 109, 152, 0.14), transparent 34%),
+    linear-gradient(135deg, rgba(194, 95, 134, 0.2), transparent 38%),
+    linear-gradient(315deg, rgba(247, 180, 204, 0.34), transparent 34%),
     var(--paper);
   color: var(--ink);
 }
@@ -54,7 +54,7 @@ button {
   flex-direction: column;
   gap: 22px;
   padding: 28px;
-  background: rgba(255, 250, 241, 0.78);
+  background: rgba(255, 249, 251, 0.82);
   border-right: 1px solid var(--line);
   backdrop-filter: blur(18px);
 }
@@ -63,18 +63,6 @@ button {
   display: flex;
   align-items: center;
   gap: 14px;
-}
-
-.brand-mark {
-  display: grid;
-  width: 52px;
-  height: 52px;
-  place-items: center;
-  border-radius: 8px;
-  background: var(--tea-dark);
-  color: #f9f4e9;
-  font-size: 24px;
-  font-weight: 800;
 }
 
 .brand h1,
@@ -141,13 +129,13 @@ button {
 .filter-button {
   padding: 8px 12px;
   border: 1px solid var(--line);
-  background: rgba(255, 250, 241, 0.7);
+  background: rgba(255, 249, 251, 0.74);
 }
 
 .tab-button.is-active,
 .filter-button.is-active {
   background: var(--tea-dark);
-  color: #fffaf1;
+  color: #fff9fb;
 }
 
 .logic-panel {
@@ -156,7 +144,7 @@ button {
   padding: 18px;
   border: 1px solid var(--line);
   border-radius: 8px;
-  background: rgba(255, 250, 241, 0.62);
+  background: rgba(255, 249, 251, 0.66);
 }
 
 .logic-panel h2 {
@@ -230,7 +218,7 @@ button {
 .primary-button {
   padding: 0 18px;
   background: var(--tea-dark);
-  color: #fffaf1;
+  color: #fff9fb;
 }
 
 .entry-panel,
@@ -238,7 +226,7 @@ button {
 .settings-panel {
   border: 1px solid var(--line);
   border-radius: 8px;
-  background: rgba(255, 250, 241, 0.84);
+  background: rgba(255, 249, 251, 0.86);
   box-shadow: var(--shadow);
 }
 
@@ -264,7 +252,7 @@ input {
   border: 1px solid var(--line);
   border-radius: 8px;
   padding: 0 12px;
-  background: #fffdfa;
+  background: #fffafd;
   color: var(--ink);
 }
 
@@ -309,7 +297,7 @@ input {
   height: 38px;
   place-items: center;
   border-radius: 8px;
-  background: #e3dccf;
+  background: #f3d6e2;
   color: var(--tea-dark);
   font-size: 13px;
   font-weight: 900;
@@ -341,13 +329,13 @@ input {
 .date-chip {
   padding: 7px 9px;
   border-radius: 7px;
-  background: #ede5d8;
+  background: #f4dfe8;
   font-weight: 800;
 }
 
 .date-chip.is-due {
   background: rgba(201, 92, 83, 0.14);
-  color: #8f302a;
+  color: #9e2f56;
 }
 
 .review-actions {
@@ -358,7 +346,7 @@ input {
 
 .status-button {
   padding: 0 10px;
-  color: #fffaf1;
+  color: #fff9fb;
 }
 
 .status-button.red {
@@ -386,18 +374,26 @@ input {
   min-height: 34px;
   padding: 0 10px;
   border: 1px solid var(--line);
-  background: #fffdfa;
+  background: #fffafd;
   color: var(--tea-dark);
 }
 
 .text-button.delete {
-  color: #a33b34;
+  color: #a0305a;
 }
 
 .settings-panel {
   display: grid;
   gap: 14px;
   padding: 18px;
+}
+
+.site-footer {
+  padding: 8px 0 18px;
+  color: var(--tea-dark);
+  font-size: 14px;
+  font-weight: 800;
+  text-align: center;
 }
 
 .setting-row {
