@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#f6f2ea" />
+    <title>後中醫複習排程</title>
+    <link rel="manifest" href="./manifest.webmanifest" />
+    <link rel="icon" href="./icons/icon.svg" />
+    <link rel="apple-touch-icon" href="./icons/icon.svg" />
+    <link rel="stylesheet" href="./styles.css?v=4" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar" aria-label="複習摘要">
+        <div class="brand">
+          <div class="brand-mark" aria-hidden="true">
+            <span>中</span>
+          </div>
+          <div>
+            <p class="eyebrow">後中醫備考</p>
+            <h1>遺忘曲線複習表</h1>
+          </div>
+        </div>
+
+        <div class="today-card">
+          <p id="todayLabel" class="eyebrow">今日</p>
+          <strong id="dueCount">0</strong>
+          <span>項待複習</span>
+        </div>
+
+        <nav class="view-tabs" aria-label="切換視圖">
+          <button class="tab-button is-active" data-view="today" type="button">今日</button>
+          <button class="tab-button" data-view="all" type="button">全部</button>
+          <button class="tab-button" data-view="settings" type="button">間距</button>
+        </nav>
+
+        <section class="logic-panel" aria-label="目前排程邏輯">
+          <h2>排程邏輯</h2>
+          <div class="logic-row">
+            <span class="dot first"></span>
+            <p>上課完成後 <strong id="firstGapPreview">2</strong> 天安排第一次複習</p>
+          </div>
+          <div class="logic-row">
+            <span class="dot red"></span>
+            <p>紅燈：卡住很多，隔 <strong id="redGapPreview">1</strong> 天再來</p>
+          </div>
+          <div class="logic-row">
+            <span class="dot amber"></span>
+            <p>橘燈：部分不熟，隔 <strong id="amberGapPreview">3</strong> 天再來</p>
+          </div>
+          <div class="logic-row">
+            <span class="dot green"></span>
+            <p>綠燈：能主動回想，隔 <strong id="greenGapPreview">7</strong> 天再來</p>
+          </div>
+        </section>
+      </aside>
+
+      <main class="main-content">
+        <section class="topbar">
+          <div>
+            <p class="eyebrow">PWA 離線版</p>
+            <h2>把每堂課變成下一次該看的清單</h2>
+          </div>
+          <button id="installButton" class="icon-text-button" hidden type="button">
+            <span aria-hidden="true">⇩</span>
+            安裝
+          </button>
+        </section>
+
+        <section class="entry-panel" aria-label="新增課程">
+          <form id="lessonForm" class="lesson-form">
+            <label>
+              <span>上課內容</span>
+              <input id="titleInput" autocomplete="off" required placeholder="例：第二堂-03｜普化 有機基礎 P14-18" />
+            </label>
+            <label>
+              <span>完成上課</span>
+              <input id="completedInput" type="date" />
+            </label>
+            <button class="primary-button" type="submit">新增</button>
+          </form>
+        </section>
+
+        <section class="board" aria-live="polite">
+          <div class="board-header">
+            <div>
+              <p id="viewEyebrow" class="eyebrow">今日待複習</p>
+              <h3 id="viewTitle">準備回收記憶</h3>
+            </div>
+            <div class="quick-filters" role="group" aria-label="篩選">
+              <button class="filter-button is-active" data-filter="all" type="button">全部</button>
+              <button class="filter-button" data-filter="overdue" type="button">逾期</button>
+              <button class="filter-button" data-filter="upcoming" type="button">未來</button>
+            </div>
+          </div>
+
+          <div id="lessonList" class="lesson-list"></div>
+          <div id="emptyState" class="empty-state" hidden>
+            <div class="curve-visual" aria-hidden="true">
+              <span></span>
+              <span></span>
+              <span></span>
+              <span></span>
+            </div>
+            <h3>目前沒有待處理項目</h3>
+            <p>新增一堂課，完成日期填入後就會自動排第一次複習。</p>
+          </div>
+        </section>
+
+        <section id="settingsPanel" class="settings-panel" hidden aria-label="間距設定">
+          <div class="setting-row">
+            <label for="firstGap">上課完成後幾天第一次複習</label>
+            <input id="firstGap" type="number" min="0" max="30" />
+          </div>
+          <div class="setting-row">
+            <label for="redGap">第一次複習紅燈後幾天第二次複習</label>
+            <input id="redGap" type="number" min="1" max="30" />
+          </div>
+          <div class="setting-row">
+            <label for="amberGap">第一次複習橘燈後幾天第二次複習</label>
+            <input id="amberGap" type="number" min="1" max="45" />
+          </div>
+          <div class="setting-row">
+            <label for="greenGap">第一次複習綠燈後幾天第二次複習</label>
+            <input id="greenGap" type="number" min="1" max="90" />
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <template id="lessonTemplate">
+      <article class="lesson-card">
+        <div class="lesson-main">
+          <div class="lesson-icon" aria-hidden="true">頁</div>
+          <div>
+            <h3></h3>
+            <p class="lesson-meta"></p>
+          </div>
+        </div>
+
+        <div class="lesson-dates"></div>
+
+        <div class="review-actions">
+          <button class="status-button red" data-result="red" type="button">紅燈</button>
+          <button class="status-button amber" data-result="amber" type="button">橘燈</button>
+          <button class="status-button green" data-result="green" type="button">綠燈</button>
+        </div>
+
+        <div class="card-actions">
+          <button class="text-button complete-class" type="button">標記完成上課</button>
+          <button class="text-button delete" type="button">刪除</button>
+        </div>
+      </article>
+    </template>
+
+    <script src="./app.js?v=4" type="module"></script>
+  </body>
+</html>
