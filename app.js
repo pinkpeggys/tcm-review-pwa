@@ -233,8 +233,8 @@ function render() {
   syncSettingsPreview();
   elements.settingsPanel.hidden = activeView !== "settings";
 
-  const dueLessons = state.lessons.filter(isDue);
-  elements.dueCount.textContent = dueLessons.length;
+  const todayLessons = state.lessons.filter(isTodayReview);
+  elements.dueCount.textContent = todayLessons.length;
 
   const visibleLessons = getVisibleLessons();
   elements.lessonList.innerHTML = "";
@@ -343,7 +343,7 @@ function getMetaText(lesson) {
 function getVisibleLessons() {
   let lessons = [...state.lessons];
 
-  if (activeView === "today" && activeFilter === "all") lessons = lessons.filter(isDue);
+  if (activeView === "today" && activeFilter === "all") lessons = lessons.filter(isTodayReview);
   if (activeFilter === "overdue") lessons = lessons.filter((lesson) => isOverdue(lesson));
   if (activeFilter === "upcoming") lessons = lessons.filter((lesson) => isUpcoming(lesson));
 
@@ -379,6 +379,11 @@ function setViewTitle() {
 function isDue(lesson) {
   const next = getNextReviewTime(lesson);
   return Boolean(next && next <= Date.now());
+}
+
+function isTodayReview(lesson) {
+  const next = getNextReviewTime(lesson);
+  return Boolean(next && next <= endOfToday().getTime());
 }
 
 function isOverdue(lesson) {
@@ -577,6 +582,12 @@ function formatVocabStep(step) {
 
 function startOfToday() {
   return new Date(`${todayISO()}T00:00:00`);
+}
+
+function endOfToday() {
+  const end = startOfToday();
+  end.setHours(23, 59, 59, 999);
+  return end;
 }
 
 function parseReviewDate(value) {
