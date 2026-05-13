@@ -8,7 +8,7 @@
     <link rel="manifest" href="./manifest.webmanifest" />
     <link rel="icon" href="./icons/icon.svg" />
     <link rel="apple-touch-icon" href="./icons/icon.svg" />
-    <link rel="stylesheet" href="./styles.css?v=6" />
+    <link rel="stylesheet" href="./styles.css?v=15" />
   </head>
   <body>
     <div class="app-shell">
@@ -33,22 +33,14 @@
         </nav>
 
         <section class="logic-panel" aria-label="目前排程邏輯">
-          <h2>排程邏輯</h2>
+          <h2>複習模式</h2>
           <div class="logic-row">
             <span class="dot first"></span>
-            <p>上課完成後 <strong id="firstGapPreview">2</strong> 天安排第一次複習</p>
+            <p id="generalPreview">一般科目：完成後 2 天第一次複習</p>
           </div>
           <div class="logic-row">
-            <span class="dot red"></span>
-            <p>紅燈：卡住很多，隔 <strong id="redGapPreview">1</strong> 天再來</p>
-          </div>
-          <div class="logic-row">
-            <span class="dot amber"></span>
-            <p>橘燈：部分不熟，隔 <strong id="amberGapPreview">3</strong> 天再來</p>
-          </div>
-          <div class="logic-row">
-            <span class="dot green"></span>
-            <p>綠燈：能主動回想，隔 <strong id="greenGapPreview">7</strong> 天再來</p>
+            <span class="dot vocab"></span>
+            <p id="vocabPreview">英文單字：固定頻率複習，綠燈即畢業</p>
           </div>
         </section>
       </aside>
@@ -70,6 +62,13 @@
             <label>
               <span>上課內容</span>
               <input id="titleInput" autocomplete="off" required placeholder="例：第二堂-03｜普化 有機基礎 P14-18" />
+            </label>
+            <label>
+              <span>複習模式</span>
+              <select id="profileInput">
+                <option value="general">一般科目</option>
+                <option value="vocab">英文單字</option>
+              </select>
             </label>
             <label>
               <span>完成上課</span>
@@ -106,22 +105,32 @@
         </section>
 
         <section id="settingsPanel" class="settings-panel" hidden aria-label="間距設定">
-          <div class="setting-row">
-            <label for="firstGap">上課完成後幾天第一次複習</label>
-            <input id="firstGap" type="number" min="0" max="30" />
-          </div>
-          <div class="setting-row">
-            <label for="redGap">第一次複習紅燈後幾天第二次複習</label>
-            <input id="redGap" type="number" min="1" max="30" />
-          </div>
-          <div class="setting-row">
-            <label for="amberGap">第一次複習橘燈後幾天第二次複習</label>
-            <input id="amberGap" type="number" min="1" max="45" />
-          </div>
-          <div class="setting-row">
-            <label for="greenGap">第一次複習綠燈後幾天第二次複習</label>
-            <input id="greenGap" type="number" min="1" max="90" />
-          </div>
+          <section class="setting-group">
+            <h3>一般科目</h3>
+            <div class="setting-grid">
+              <label>
+                <span>完成後幾天第一次複習</span>
+                <input data-profile="general" data-gap="firstGap" type="number" min="0" max="30" />
+              </label>
+              <label>
+                <span>紅燈後幾天再複習</span>
+                <input data-profile="general" data-gap="redGap" type="number" min="0" max="30" />
+              </label>
+              <label>
+                <span>橘燈後幾天再複習</span>
+                <input data-profile="general" data-gap="amberGap" type="number" min="0" max="45" />
+              </label>
+              <label>
+                <span>綠燈後幾天再複習</span>
+                <input data-profile="general" data-gap="greenGap" type="number" min="0" max="90" />
+              </label>
+            </div>
+          </section>
+          <section class="setting-group">
+            <h3>英文單字</h3>
+            <p class="setting-note">保留 11 階固定流程，但每階可以改數字與單位。複習時按「完成複習」進入下一階，按「綠燈」代表已熟，不再排入待複習。</p>
+            <div id="vocabScheduleSettings" class="vocab-setting-list" aria-label="英文單字複習頻率設定"></div>
+          </section>
         </section>
         <footer class="site-footer">From pinkpeggys</footer>
       </main>
@@ -152,6 +161,6 @@
       </article>
     </template>
 
-    <script src="./app.js?v=6" type="module"></script>
+    <script src="./app.js?v=15" type="module"></script>
   </body>
 </html>
