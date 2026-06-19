@@ -1,9 +1,9 @@
-const CACHE_NAME = "tcm-review-pwa-v16";
+const CACHE_NAME = "tcm-review-pwa-v17";
 const ASSETS = [
   "./",
   "./index.html",
-  "./styles.css?v=16",
-  "./app.js?v=16",
+  "./styles.css?v=17",
+  "./app.js?v=17",
   "./manifest.webmanifest",
   "./icons/icon.svg",
 ];
