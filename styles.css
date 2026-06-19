@@ -35,7 +35,8 @@ body {
 }
 
 button,
-input {
+input,
+select {
   font: inherit;
 }
 
@@ -232,7 +233,7 @@ button {
 
 .lesson-form {
   display: grid;
-  grid-template-columns: minmax(260px, 1fr) minmax(150px, 220px) auto;
+  grid-template-columns: minmax(240px, 1fr) minmax(120px, 170px) minmax(150px, 210px) auto;
   gap: 12px;
   padding: 16px;
 }
@@ -245,7 +246,8 @@ label {
   font-weight: 800;
 }
 
-input {
+input,
+select {
   min-width: 0;
   min-height: 42px;
   width: 100%;
@@ -254,6 +256,17 @@ input {
   padding: 0 12px;
   background: #fffafd;
   color: var(--ink);
+}
+
+select {
+  appearance: none;
+  background-image: linear-gradient(45deg, transparent 50%, var(--tea-dark) 50%),
+    linear-gradient(135deg, var(--tea-dark) 50%, transparent 50%);
+  background-position:
+    calc(100% - 18px) 18px,
+    calc(100% - 12px) 18px;
+  background-repeat: no-repeat;
+  background-size: 6px 6px, 6px 6px;
 }
 
 .board {
@@ -338,6 +351,36 @@ input {
   color: #9e2f56;
 }
 
+.vocab-schedule {
+  display: flex;
+  flex: 1 1 100%;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding-top: 2px;
+}
+
+.vocab-schedule span {
+  padding: 6px 8px;
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  color: var(--muted);
+  background: rgba(255, 250, 253, 0.72);
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.vocab-schedule span.is-current {
+  border-color: var(--tea-dark);
+  background: var(--tea-dark);
+  color: #fff9fb;
+}
+
+.vocab-schedule span.is-done {
+  border-color: rgba(75, 140, 100, 0.35);
+  background: rgba(75, 140, 100, 0.12);
+  color: var(--green);
+}
+
 .review-actions {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -358,6 +401,22 @@ input {
 }
 
 .status-button.green {
+  background: var(--green);
+}
+
+.status-button.vocab-next {
+  background: var(--tea-dark);
+}
+
+.two-action-review {
+  grid-template-columns: 1fr 1fr;
+}
+
+.status-button.review-complete {
+  background: var(--tea-dark);
+}
+
+.status-button.memory-mastered {
   background: var(--green);
 }
 
@@ -384,8 +443,107 @@ input {
 
 .settings-panel {
   display: grid;
-  gap: 14px;
+  gap: 18px;
   padding: 18px;
+}
+
+.setting-group {
+  display: grid;
+  gap: 12px;
+  padding: 16px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: rgba(255, 250, 253, 0.72);
+}
+
+.setting-group h3 {
+  margin: 0;
+  font-size: 17px;
+}
+
+.setting-note {
+  margin: 0;
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.55;
+}
+
+.setting-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(120px, 1fr));
+  gap: 12px;
+}
+
+.schedule-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.schedule-list span {
+  padding: 7px 10px;
+  border-radius: 7px;
+  background: #f4dfe8;
+  color: var(--tea-dark);
+  font-size: 13px;
+  font-weight: 850;
+}
+
+.vocab-setting-list {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(190px, 1fr));
+  gap: 10px;
+}
+
+.general-setting-list {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(150px, 1fr));
+  gap: 10px;
+}
+
+.general-setting-row {
+  display: grid;
+  grid-template-columns: 62px minmax(64px, 1fr) 24px;
+  align-items: center;
+  gap: 8px;
+  padding: 10px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: rgba(255, 250, 253, 0.7);
+}
+
+.general-setting-row span {
+  margin: 0;
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 850;
+}
+
+.general-setting-row input {
+  min-height: 36px;
+}
+
+.vocab-setting-row {
+  display: grid;
+  grid-template-columns: 62px minmax(72px, 1fr) minmax(92px, 1fr);
+  align-items: center;
+  gap: 8px;
+  padding: 10px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: rgba(255, 250, 253, 0.7);
+}
+
+.vocab-setting-row span {
+  margin: 0;
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 850;
+}
+
+.vocab-setting-row input,
+.vocab-setting-row select {
+  min-height: 36px;
 }
 
 .site-footer {
@@ -466,6 +624,18 @@ input {
     grid-template-columns: 1fr;
   }
 
+  .setting-grid {
+    grid-template-columns: repeat(2, minmax(120px, 1fr));
+  }
+
+  .vocab-setting-list {
+    grid-template-columns: 1fr;
+  }
+
+  .general-setting-list {
+    grid-template-columns: repeat(2, minmax(150px, 1fr));
+  }
+
   .card-actions {
     flex-direction: row;
     flex-wrap: wrap;
@@ -490,6 +660,14 @@ input {
   }
 
   .setting-row {
+    grid-template-columns: 1fr;
+  }
+
+  .setting-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .general-setting-list {
     grid-template-columns: 1fr;
   }
 }
