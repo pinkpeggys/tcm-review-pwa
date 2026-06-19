@@ -8,7 +8,7 @@
     <link rel="manifest" href="./manifest.webmanifest" />
     <link rel="icon" href="./icons/icon.svg" />
     <link rel="apple-touch-icon" href="./icons/icon.svg" />
-    <link rel="stylesheet" href="./styles.css?v=16" />
+    <link rel="stylesheet" href="./styles.css?v=17" />
   </head>
   <body>
     <div class="app-shell">
@@ -36,11 +36,11 @@
           <h2>複習模式</h2>
           <div class="logic-row">
             <span class="dot first"></span>
-            <p id="generalPreview">一般科目：完成後 2 天第一次複習</p>
+            <p id="generalPreview">一般科目：1天 → 3天 → 7天 → 14天 → 21天 → 28天 → 35天</p>
           </div>
           <div class="logic-row">
             <span class="dot vocab"></span>
-            <p id="vocabPreview">英文單字：固定頻率複習，綠燈即畢業</p>
+            <p id="vocabPreview">英文單字：固定頻率複習，也可提早成為長久記憶</p>
           </div>
         </section>
       </aside>
@@ -107,28 +107,12 @@
         <section id="settingsPanel" class="settings-panel" hidden aria-label="間距設定">
           <section class="setting-group">
             <h3>一般科目</h3>
-            <div class="setting-grid">
-              <label>
-                <span>完成後幾天第一次複習</span>
-                <input data-profile="general" data-gap="firstGap" type="number" min="0" max="30" />
-              </label>
-              <label>
-                <span>紅燈後幾天再複習</span>
-                <input data-profile="general" data-gap="redGap" type="number" min="0" max="30" />
-              </label>
-              <label>
-                <span>橘燈後幾天再複習</span>
-                <input data-profile="general" data-gap="amberGap" type="number" min="0" max="45" />
-              </label>
-              <label>
-                <span>綠燈後幾天再複習</span>
-                <input data-profile="general" data-gap="greenGap" type="number" min="0" max="90" />
-              </label>
-            </div>
+            <p class="setting-note">共 7 次複習，天數皆從完成上課日開始計算。每次按「已完成複習」進入下一階，也可以提早按「已成為長久記憶」結束排程。</p>
+            <div id="generalScheduleSettings" class="general-setting-list" aria-label="一般科目複習頻率設定"></div>
           </section>
           <section class="setting-group">
             <h3>英文單字</h3>
-            <p class="setting-note">保留 11 階固定流程，但每階可以改數字與單位。複習時按「完成複習」進入下一階，按「綠燈」代表已熟，不再排入待複習。</p>
+            <p class="setting-note">保留 11 階固定流程，但每階可以改數字與單位。複習時按「已完成複習」進入下一階，也可以提早按「已成為長久記憶」結束排程。</p>
             <div id="vocabScheduleSettings" class="vocab-setting-list" aria-label="英文單字複習頻率設定"></div>
           </section>
         </section>
@@ -149,9 +133,8 @@
         <div class="lesson-dates"></div>
 
         <div class="review-actions">
-          <button class="status-button red" data-result="red" type="button">紅燈</button>
-          <button class="status-button amber" data-result="amber" type="button">橘燈</button>
-          <button class="status-button green" data-result="green" type="button">綠燈</button>
+          <button class="status-button review-complete" type="button">已完成複習</button>
+          <button class="status-button memory-mastered" type="button">已成為長久記憶</button>
         </div>
 
         <div class="card-actions">
@@ -161,6 +144,6 @@
       </article>
     </template>
 
-    <script src="./app.js?v=16" type="module"></script>
+    <script src="./app.js?v=17" type="module"></script>
   </body>
 </html>
