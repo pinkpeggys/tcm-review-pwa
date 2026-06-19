@@ -1,4 +1,5 @@
 const STORAGE_KEY = "tcm-review-pwa-state-v1";
+const DEFAULT_GENERAL_STEPS = [1, 3, 7, 14, 21, 28, 35];
 const DEFAULT_VOCAB_STEPS = [
   { amount: 5, unit: "minute" },
   { amount: 30, unit: "minute" },
@@ -24,10 +25,7 @@ const defaults = {
     profiles: {
       general: {
         label: "一般科目",
-        firstGap: 2,
-        redGap: 1,
-        amberGap: 3,
-        greenGap: 7,
+        steps: DEFAULT_GENERAL_STEPS,
       },
       vocab: {
         label: "英文單字",
@@ -36,12 +34,6 @@ const defaults = {
     },
   },
   lessons: [],
-};
-
-const resultText = {
-  red: "紅燈",
-  amber: "橘燈",
-  green: "綠燈",
 };
 
 let state = loadState();
@@ -62,7 +54,7 @@ const elements = {
   viewTitle: document.querySelector("#viewTitle"),
   settingsPanel: document.querySelector("#settingsPanel"),
   installButton: document.querySelector("#installButton"),
-  gapInputs: document.querySelectorAll("[data-profile][data-gap]"),
+  generalScheduleSettings: document.querySelector("#generalScheduleSettings"),
   vocabScheduleSettings: document.querySelector("#vocabScheduleSettings"),
   generalPreview: document.querySelector("#generalPreview"),
   vocabPreview: document.querySelector("#vocabPreview"),
@@ -75,7 +67,7 @@ function init() {
   elements.todayLabel.textContent = formatDate(todayISO(), "zh-TW");
   elements.completedInput.value = todayISO();
   recalculateOpenFirstReviews();
-  syncSettingsInputs();
+  renderGeneralSettings();
   renderVocabSettings();
   bindEvents();
   render();
@@ -104,16 +96,10 @@ function bindEvents() {
     });
   });
 
-  elements.gapInputs.forEach((input) => {
-    input.addEventListener("input", () => {
-      const profile = input.dataset.profile;
-      const key = input.dataset.gap;
-      if (!state.settings.profiles[profile]) return;
-      state.settings.profiles[profile][key] = Number(input.value || defaults.settings.profiles[profile][key]);
-      recalculateOpenFirstReviews();
-      saveState();
-      render();
-    });
+  elements.generalScheduleSettings.addEventListener("input", (event) => {
+    const input = event.target.closest("[data-general-step]");
+    if (!input) return;
+    updateGeneralStep(input);
   });
 
   elements.vocabScheduleSettings.addEventListener("input", (event) => {
@@ -156,6 +142,7 @@ function addLesson() {
     firstReviewDate: completedDate ? getFirstReviewDate(elements.profileInput.value, completedDate) : "",
     firstReviewResult: "",
     secondReviewDate: "",
+    generalStep: 0,
     vocabStep: 0,
     mastered: false,
     reviewCount: 0,
@@ -178,13 +165,21 @@ function markClassComplete(id) {
   render();
 }
 
-function completeReview(id, result) {
+function advanceGeneralReview(id) {
   const lesson = state.lessons.find((item) => item.id === id);
   if (!lesson) return;
 
-  lesson.firstReviewResult = result;
-  lesson.secondReviewDate = addDays(todayISO(), getProfileSettings(lesson.profile)[`${result}Gap`]);
+  const nextStep = (lesson.generalStep ?? 0) + 1;
   lesson.reviewCount = Math.max(lesson.reviewCount + 1, 1);
+
+  if (nextStep >= getGeneralSteps().length) {
+    markLessonMastered(id, false);
+    return;
+  }
+
+  lesson.generalStep = nextStep;
+  lesson.firstReviewDate = getGeneralReviewDate(lesson.completedDate, nextStep);
+  lesson.secondReviewDate = "";
   saveState();
   render();
 }
@@ -198,7 +193,7 @@ function advanceVocabReview(id) {
 
   const vocabSteps = getVocabSteps();
   if (nextStep >= vocabSteps.length) {
-    markVocabMastered(id);
+    markLessonMastered(id, false);
     return;
   }
 
@@ -209,15 +204,15 @@ function advanceVocabReview(id) {
   render();
 }
 
-function markVocabMastered(id) {
+function markLessonMastered(id, countReview = true) {
   const lesson = state.lessons.find((item) => item.id === id);
   if (!lesson) return;
 
   lesson.mastered = true;
-  lesson.firstReviewResult = "green";
+  lesson.firstReviewResult = "mastered";
   lesson.firstReviewDate = "";
   lesson.secondReviewDate = "";
-  lesson.reviewCount = Math.max(lesson.reviewCount + 1, 1);
+  if (countReview) lesson.reviewCount = Math.max(lesson.reviewCount + 1, 1);
   saveState();
   render();
 }
@@ -229,7 +224,6 @@ function deleteLesson(id) {
 }
 
 function render() {
-  syncSettingsInputs();
   syncSettingsPreview();
   elements.settingsPanel.hidden = activeView !== "settings";
 
@@ -261,22 +255,18 @@ function renderLesson(lesson) {
   meta.textContent = getMetaText(lesson);
   dates.append(...getDateChips(lesson));
   if (lesson.profile === "vocab") dates.append(renderVocabSchedule(lesson));
+  else dates.append(renderGeneralSchedule(lesson));
   completeButton.hidden = Boolean(lesson.completedDate);
 
-  if (lesson.profile === "vocab") {
-    reviewActions.classList.add("vocab-review-actions");
-    statusButtons[0].textContent = "完成複習";
-    statusButtons[0].className = "status-button vocab-next";
-    statusButtons[1].hidden = true;
-    statusButtons[2].textContent = "綠燈";
-    statusButtons[0].addEventListener("click", () => advanceVocabReview(lesson.id));
-    statusButtons[2].addEventListener("click", () => markVocabMastered(lesson.id));
-    if (lesson.mastered) reviewActions.hidden = true;
-  } else {
-    statusButtons.forEach((button) => {
-      button.addEventListener("click", () => completeReview(lesson.id, button.dataset.result));
-    });
-  }
+  reviewActions.classList.add("two-action-review");
+  statusButtons[0].textContent = "已完成複習";
+  statusButtons[1].textContent = "已成為長久記憶";
+  statusButtons[0].addEventListener("click", () => {
+    if (lesson.profile === "vocab") advanceVocabReview(lesson.id);
+    else advanceGeneralReview(lesson.id);
+  });
+  statusButtons[1].addEventListener("click", () => markLessonMastered(lesson.id));
+  if (lesson.mastered) reviewActions.hidden = true;
 
   completeButton.addEventListener("click", () => markClassComplete(lesson.id));
   node.querySelector(".delete").addEventListener("click", () => deleteLesson(lesson.id));
@@ -293,8 +283,8 @@ function getDateChips(lesson) {
   ] : [
     ["模式", getProfileSettings(lesson.profile).label],
     ["完成", lesson.completedDate],
-    ["第一次", lesson.firstReviewDate],
-    ["第二次", lesson.secondReviewDate],
+    lesson.mastered ? ["狀態", "長久記憶"] : ["下次", lesson.firstReviewDate],
+    lesson.mastered ? null : ["階段", `第 ${(lesson.generalStep ?? 0) + 1}/7 次・${getGeneralSteps()[lesson.generalStep ?? 0]}天`],
   ];
 
   return chips
@@ -305,6 +295,22 @@ function getDateChips(lesson) {
       chip.textContent = ["模式", "階段", "狀態"].includes(label) ? value : `${label} ${formatDateTime(value)}`;
       return chip;
     });
+}
+
+function renderGeneralSchedule(lesson) {
+  const schedule = document.createElement("div");
+  schedule.className = "vocab-schedule";
+  schedule.setAttribute("aria-label", "一般科目七次複習頻率");
+
+  getGeneralSteps().forEach((days, index) => {
+    const item = document.createElement("span");
+    item.textContent = `${days}天`;
+    if (lesson.mastered || index < (lesson.generalStep ?? 0)) item.classList.add("is-done");
+    else if (index === (lesson.generalStep ?? 0)) item.classList.add("is-current");
+    schedule.append(item);
+  });
+
+  return schedule;
 }
 
 function renderVocabSchedule(lesson) {
@@ -330,13 +336,11 @@ function renderVocabSchedule(lesson) {
 
 function getMetaText(lesson) {
   if (lesson.profile === "vocab") {
-    if (lesson.mastered) return "英文單字：綠燈已熟，不再排程";
+    if (lesson.mastered) return "英文單字：已成為長久記憶，不再排程";
     return `英文單字固定複習：${formatVocabStep(getVocabSteps()[lesson.vocabStep ?? 0]) || "下一階段"}`;
   }
-  if (lesson.firstReviewResult) {
-    return `第一次複習：${resultText[lesson.firstReviewResult]}，第二次已排定`;
-  }
-  if (lesson.firstReviewDate) return "等待第一次複習評估";
+  if (lesson.mastered) return "一般科目：已成為長久記憶，不再排程";
+  if (lesson.firstReviewDate) return `一般科目固定複習：第 ${(lesson.generalStep ?? 0) + 1}/7 次`;
   return "尚未完成上課";
 }
 
@@ -411,8 +415,11 @@ function getNextReviewTime(lesson) {
 
 function recalculateOpenFirstReviews() {
   state.lessons.forEach((lesson) => {
-    if (lesson.completedDate && !lesson.firstReviewResult && lesson.profile !== "vocab") {
-      lesson.firstReviewDate = getFirstReviewDate(lesson.profile, lesson.completedDate);
+    if (lesson.completedDate && lesson.profile !== "vocab" && !lesson.mastered && (lesson.reviewCount ?? 0) === 0) {
+      lesson.generalStep = 0;
+      lesson.firstReviewDate = getGeneralReviewDate(lesson.completedDate, 0);
+      lesson.secondReviewDate = "";
+      lesson.firstReviewResult = "";
     }
     if (lesson.completedDate && lesson.profile === "vocab" && !lesson.mastered && (lesson.reviewCount ?? 0) === 0) {
       lesson.firstReviewDate = getFirstReviewDate("vocab", lesson.completedDate);
@@ -421,20 +428,9 @@ function recalculateOpenFirstReviews() {
   saveState();
 }
 
-function syncSettingsInputs() {
-  elements.gapInputs.forEach((input) => {
-    const profile = input.dataset.profile;
-    const key = input.dataset.gap;
-    const value = state.settings.profiles[profile][key];
-    if (Number(input.value) !== value) {
-      input.value = value;
-    }
-  });
-}
-
 function syncSettingsPreview() {
-  elements.generalPreview.textContent = getPreviewText("general");
-  elements.vocabPreview.textContent = `英文單字：${getVocabSteps().map(formatVocabStep).join(" → ")}，綠燈即畢業`;
+  elements.generalPreview.textContent = `一般科目：${getGeneralSteps().map((days) => `${days}天`).join(" → ")}，完成七次或提早成為長久記憶`;
+  elements.vocabPreview.textContent = `英文單字：${getVocabSteps().map(formatVocabStep).join(" → ")}，也可提早成為長久記憶`;
 }
 
 function loadState() {
@@ -457,23 +453,28 @@ function normalizeState(stored) {
       vocab: { ...defaults.settings.profiles.vocab, ...legacySettings.profiles.vocab },
     };
   } else {
-    normalized.settings.profiles.general = {
-      ...defaults.settings.profiles.general,
-      firstGap: legacySettings.firstGap ?? defaults.settings.profiles.general.firstGap,
-      redGap: legacySettings.redGap ?? defaults.settings.profiles.general.redGap,
-      amberGap: legacySettings.amberGap ?? defaults.settings.profiles.general.amberGap,
-      greenGap: legacySettings.greenGap ?? defaults.settings.profiles.general.greenGap,
-    };
+    normalized.settings.profiles.general = { ...defaults.settings.profiles.general };
   }
 
   normalized.lessons = (stored.lessons || [])
     .filter((lesson) => !isSampleLesson(lesson))
-    .map((lesson) => ({
-      ...lesson,
-      profile: lesson.profile || "general",
-      vocabStep: lesson.vocabStep ?? 0,
-      mastered: Boolean(lesson.mastered),
-    }));
+    .map((lesson) => {
+      const profile = lesson.profile || "general";
+      const mastered = Boolean(lesson.mastered);
+      const generalStep = lesson.generalStep ?? Math.min(lesson.reviewCount ?? 0, DEFAULT_GENERAL_STEPS.length - 1);
+      return {
+        ...lesson,
+        profile,
+        generalStep,
+        vocabStep: lesson.vocabStep ?? 0,
+        mastered,
+        firstReviewResult: profile === "general" ? "" : lesson.firstReviewResult,
+        secondReviewDate: profile === "general" ? "" : lesson.secondReviewDate,
+        firstReviewDate: profile === "general" && lesson.completedDate && !mastered
+          ? addDays(lesson.completedDate, normalized.settings.profiles.general.steps[generalStep])
+          : lesson.firstReviewDate,
+      };
+    });
 
   return normalized;
 }
@@ -486,23 +487,25 @@ function getProfileSettings(profile = "general") {
   return state.settings.profiles[profile] || state.settings.profiles.general;
 }
 
+function getGeneralSteps() {
+  return state.settings.profiles.general.steps || DEFAULT_GENERAL_STEPS;
+}
+
 function getVocabSteps() {
   return state.settings.profiles.vocab.steps || DEFAULT_VOCAB_STEPS;
 }
 
 function getFirstReviewDate(profile, completedDate) {
   if (profile === "vocab") return getVocabReviewDateFromCompleted(completedDate, 0);
-  return addDays(completedDate, getProfileSettings(profile).firstGap);
+  return getGeneralReviewDate(completedDate, 0);
+}
+
+function getGeneralReviewDate(completedDate, stepIndex) {
+  return addDays(completedDate, getGeneralSteps()[stepIndex] ?? getGeneralSteps()[0]);
 }
 
 function isDueChip(label, value) {
   return ["第一次", "第二次", "下次"].includes(label) && parseReviewDate(value).getTime() <= Date.now();
-}
-
-function getPreviewText(profile) {
-  const settings = getProfileSettings(profile);
-  const first = settings.firstGap === 0 ? "完成當天" : `完成後 ${settings.firstGap} 天`;
-  return `${settings.label}：${first}第一次複習，紅 ${settings.redGap} 天、橘 ${settings.amberGap} 天、綠 ${settings.greenGap} 天`;
 }
 
 function saveState() {
@@ -563,6 +566,36 @@ function renderVocabSettings() {
     row.querySelector("select").value = step.unit;
     elements.vocabScheduleSettings.append(row);
   });
+}
+
+function renderGeneralSettings() {
+  elements.generalScheduleSettings.innerHTML = "";
+  getGeneralSteps().forEach((days, index) => {
+    const row = document.createElement("label");
+    row.className = "general-setting-row";
+    row.innerHTML = `
+      <span>第 ${index + 1} 次</span>
+      <input data-general-step="${index}" type="text" inputmode="numeric" pattern="[0-9]*" value="${days}" />
+      <span>天</span>
+    `;
+    elements.generalScheduleSettings.append(row);
+  });
+}
+
+function updateGeneralStep(input) {
+  const index = Number(input.dataset.generalStep);
+  const steps = [...getGeneralSteps()];
+  steps[index] = Math.max(1, Number(input.value || 1));
+  state.settings.profiles.general.steps = steps;
+
+  state.lessons.forEach((lesson) => {
+    if (lesson.profile === "general" && !lesson.mastered && (lesson.reviewCount ?? 0) === 0 && index === 0) {
+      lesson.firstReviewDate = getGeneralReviewDate(lesson.completedDate, 0);
+    }
+  });
+
+  saveState();
+  render();
 }
 
 function updateVocabStep(input) {
