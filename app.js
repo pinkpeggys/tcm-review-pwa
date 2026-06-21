@@ -387,7 +387,7 @@ function isDue(lesson) {
 
 function isTodayReview(lesson) {
   const next = getNextReviewTime(lesson);
-  return Boolean(next && next <= endOfToday().getTime());
+  return Boolean(next && next >= startOfToday().getTime() && next <= endOfToday().getTime());
 }
 
 function isOverdue(lesson) {
